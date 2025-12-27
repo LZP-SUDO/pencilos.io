@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PencilOS on python - 基于Python的操作系统开发项目</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #306998; /* Python蓝色 */
+            --secondary-color: #FFD43B; /* Python黄色 */
+            --dark-color: #0D2A4A;
+            --light-color: #f8f9fa;
+            --gray-color: #6c757d;
+            --success-color: #4CAF50;
+            --danger-color: #f44336;
+            --border-radius: 8px;
+            --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+        }
+        
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 导航栏 */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .logo i {
+            color: var(--secondary-color);
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .cta-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .cta-button:hover {
+            background-color: #25567c;
+            transform: translateY(-2px);
+        }
+        
+        /* 英雄区域 */
+        .hero {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #0D2A4A 0%, var(--primary-color) 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero-content p {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .secondary-button {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 12px 30px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .secondary-button:hover {
+            background-color: white;
+            color: var(--primary-color);
+        }
+        
+        /* 特性区域 */
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+        
+        .section-title p {
+            color: var(--gray-color);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .features {
+            padding: 100px 0;
+            background-color: white;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+        
+        .feature-card {
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            padding: 40px 30px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(48, 105, 152, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+        }
+        
+        .feature-icon i {
+            font-size: 36px;
+            color: var(--primary-color);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+        
+        /* 代码演示区域 */
+        .code-demo {
+            padding: 100px 0;
+            background-color: #1e1e1e;
+            color: white;
+        }
+        
+        .code-container {
+            background-color: #252526;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .code-header {
+            background-color: #2d2d30;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .code-title {
+            font-weight: 600;
+            color: #cccccc;
+        }
+        
+        .code-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .code-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .control-red { background-color: #ff5f56; }
+        .control-yellow { background-color: #ffbd2e; }
+        .control-green { background-color: #27ca3f; }
+        
+        .code-content {
+            padding: 30px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+        
+        .code-line {
+            margin-bottom: 10px;
+        }
+        
+        .code-comment { color: #6a9955; }
+        .code-keyword { color: #569cd6; }
+        .code-function { color: #dcdcaa; }
+        .code-string { color: #ce9178; }
+        .code-class { color: #4ec9b0; }
+        
+        /* 下载区域 */
+        .download {
+            padding: 100px 0;
+            background-color: white;
+            text-align: center;
+        }
+        
+        .download-options {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .download-card {
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            padding: 40px 30px;
+            width: 300px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+        
+        .download-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .download-icon {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: var(--dark-color);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        /* 页脚 */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 70px 0 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--secondary-color);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: #aaa;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: var(--transition);
+        }
+        
+        .social-icons a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .hero-content h1 {
+                font-size: 2.8rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+                font-size: 24px;
+                cursor: pointer;
+                color: var(--dark-color);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .features-grid, .download-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .download-card {
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+        
+        /* 移动端菜单 */
+        .mobile-menu-toggle {
+            display: none;
+        }
+        
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            padding: 30px;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .mobile-nav.active {
+            transform: translateX(0);
+        }
+        
+        .mobile-nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .mobile-nav-links {
+            list-style: none;
+        }
+        
+        .mobile-nav-links li {
+            margin-bottom: 20px;
+        }
+        
+        .mobile-nav-links a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .close-menu {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--dark-color);
+            cursor: pointer;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <i class="fab fa-python"></i>
+                    <span>PyOS</span>
+                </div>
+                
+                <ul class="nav-links">
+                    <li><a href="#home">首页</a></li>
+                    <li><a href="#features">特性</a></li>
+                    <li><a href="#code">代码示例</a></li>
+                    <li><a href="#download">下载</a></li>
+                    <li><a href="#docs">文档</a></li>
+                    <li><a href="#community">社区</a></li>
+                </ul>
+                
+                <a href="#download" class="cta-button">下载 PyOS</a>
+                
+                <div class="mobile-menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 移动端菜单 -->
+    <div class="overlay" id="overlay"></div>
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-header">
+            <div class="logo">
+                <i class="fab fa-python"></i>
+                <span>PyOS</span>
+            </div>
+            <button class="close-menu" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <ul class="mobile-nav-links">
+            <li><a href="#home">首页</a></li>
+            <li><a href="#features">特性</a></li>
+            <li><a href="#code">代码示例</a></li>
+            <li><a href="#download">下载</a></li>
+            <li><a href="#docs">文档</a></li>
+            <li><a href="#community">社区</a></li>
+        </ul>
+        
+        <a href="#download" class="cta-button" style="margin-top: 30px;">下载 PyOS</a>
+    </div>
+
+    <!-- 英雄区域 -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1>使用Python构建下一代操作系统</h1>
+                <p>PencilOS on python是一个完全使用Python开发的开源操作系统项目，旨在为开发人员提供灵活、可扩展且易于理解的系统编程环境。通过Python的简洁语法和强大生态，重新定义操作系统开发。</p>
+                
+                <div class="hero-buttons">
+                    <a href="#download" class="cta-button">立即体验</a>
+                    <a href="#features" class="secondary-button">了解更多</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特性区域 -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>PencilOS on python 核心特性</h2>
+                <p>PencilOS on python结合了Python语言的优雅和现代操作系统所需的关键功能</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Python驱动</h3>
+                    <p>整个操作系统内核和用户空间均使用Python编写，大大降低了系统开发的学习曲线和开发难度。</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>高性能微内核</h3>
+                    <p>采用微内核架构，核心服务运行在用户空间，提高系统的稳定性、安全性和可扩展性。</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>安全第一</h3>
+                    <p>内置基于能力的安全模型，提供进程隔离、权限控制和内存保护，确保系统安全可靠。</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-plug"></i>
+                    </div>
+                    <h3>模块化设计</h3>
+                    <p>系统组件高度模块化，可以轻松替换或扩展各个部分，适应不同的应用场景和硬件平台。</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3>异步网络栈</h3>
+                    <p>内置异步网络协议栈，利用Python的async/await语法，提供高性能的网络通信能力。</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>活跃社区</h3>
+                    <p>拥有来自全球的开发者社区，持续贡献代码、文档和教程，推动项目快速发展。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   <!-- 代码演示区域 -->
+<section class="code-demo" id="code">
+    <div class="container">
+        <div class="section-title">
+            <h2 style="color: white;">Pythonic 系统编程</h2>
+            <p style="color: #aaa;">体验用Python编写系统代码的优雅与简洁</p>
+        </div>
+        
+        <div class="code-container">
+            <div class="code-header">
+                <div class="code-title">kernel_main.py</div>
+                <div class="code-controls">
+                    <div class="code-control control-red"></div>
+                    <div class="code-control control-yellow"></div>
+                    <div class="code-control control-green"></div>
+                </div>
+            </div>
+            
+            <div class="code-content">
+                <div class="code-line"><span class="code-keyword">def</span> <span class="code-function">main_kernel</span>():</div>
+                <div class="code-line">    print_color_row()</div>
+                <div class="code-line">    <span class="code-keyword">while</span>(<span class="code-keyword">True</span>):</div>
+                <div class="code-line">        <span class="code-keyword">global</span> input_str</div>
+                <div class="code-line">        input_str = input(<span class="code-string">"user$"</span>)</div>
+                <div class="code-line">        <span class="code-comment">##bash_kernel()</span></div>
+                <div class="code-line">        <span class="code-keyword">if</span> (input_str == <span class="code-string">'help'</span>):</div>
+                <div class="code-line">            <span class="code-keyword">print</span>(<span class="code-string">'welcome to pencilOS on python bash'</span>)</div>
+                <div class="code-line">            <span class="code-keyword">print</span>(<span class="code-string">'If you want to learn more, please visit https://lzp-sudo.github.io/pencilos.io/python.html'</span>)</div>
+                <div class="code-line">        <span class="code-keyword">elif</span> (input_str == <span class="code-string">'quit'</span>):</div>
+                <div class="code-line">            <span class="code-keyword">print</span>(<span class="code-string">"\033[32mquiting\033[0m"</span>)</div>
+                <div class="code-line">            time.sleep(<span class="code-keyword">2</span>)</div>
+                <div class="code-line">            <span class="code-keyword">break</span></div>
+                <div class="code-line">        <span class="code-keyword">pass</span></div>
+                <div class="code-line">    <span class="code-keyword">pass</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- 下载区域 -->
+    <section class="download" id="download">
+        <div class="container">
+            <div class="section-title">
+                <h2>获取 PyOS</h2>
+                <p>选择适合您的版本开始探索Python操作系统的世界</p>
+            </div>
+            
+            <div class="download-options">
+                <div class="download-card">
+                    <div class="download-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <div class="version-badge">v0.8.2 稳定版</div>
+                    <h3>开发者版本</h3>
+                    <p>适用于开发者和早期体验者，包含完整开发工具链和调试支持。</p>
+                    <a href="#" class="cta-button" style="margin-top: 20px; display: inline-block;">下载 ISO</a>
+                </div>
+                
+                <div class="download-card">
+                    <div class="download-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="version-badge">v0.9.0 Beta</div>
+                    <h3>服务器版本</h3>
+                    <p>针对服务器环境优化，提供网络服务和容器化支持，适合部署应用。</p>
+                    <a href="#" class="cta-button" style="margin-top: 20px; display: inline-block;">下载镜像</a>
+                </div>
+                
+                <div class="download-card">
+                    <div class="download-icon">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <div class="version-badge">每日构建</div>
+                    <h3>源码构建</h3>
+                    <p>直接从GitHub仓库获取最新源码，体验最前沿的功能和修复。</p>
+                    <a href="#" class="cta-button" style="margin-top: 20px; display: inline-block;">获取源码</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer id="community">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>PencilOS on python 项目</h3>
+                    <p>PencilOS on python是一个完全使用Python开发的开源操作系统，旨在降低系统编程门槛，让更多开发者能够理解和参与操作系统开发。</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">首页</a></li>
+                        <li><a href="#features">特性</a></li>
+                        <li><a href="#code">代码示例</a></li>
+                        <li><a href="#download">下载</a></li>
+                        <li><a href="#">文档</a></li>
+                        <li><a href="#">贡献指南</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>开发资源</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">API 文档</a></li>
+                        <li><a href="#">内核开发指南</a></li>
+                        <li><a href="#">驱动开发</a></li>
+                        <li><a href="#">系统架构</a></li>
+                        <li><a href="#">性能调优</a></li>
+                        <li><a href="#">安全模型</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>社区</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">论坛</a></li>
+                        <li><a href="#">博客</a></li>
+                        <li><a href="#">问题追踪</a></li>
+                        <li><a href="#">活动日历</a></li>
+                        <li><a href="#">开发者邮件列表</a></li>
+                        <li><a href="#">IRC频道</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2025 PencilOS on python 项目. 遵循 MIT 开源协议。</p>
+                <p style="margin-top: 10px;">Python是Python软件基金会的商标。所有其他商标均为其各自所有者的财产。</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileNav = document.getElementById('mobileNav');
+        const closeMenu = document.getElementById('closeMenu');
+        const overlay = document.getElementById('overlay');
+        
+        menuToggle.addEventListener('click', () => {
+            mobileNav.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        closeMenu.addEventListener('click', () => {
+            mobileNav.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+        
+        overlay.addEventListener('click', () => {
+            mobileNav.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    // 关闭移动菜单
+                    mobileNav.classList.remove('active');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                    
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // 滚动时高亮导航
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-links a, .mobile-nav-links a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if(scrollY >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if(link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
